@@ -1,4 +1,4 @@
-package com.jayshollenberger.day2.util;
+package com.jayshollenberger.util;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

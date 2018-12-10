@@ -1,7 +1,6 @@
 package com.jayshollenberger.day2;
 
-import com.jayshollenberger.day2.util.LoadTextFile;
-import org.apache.commons.lang3.StringUtils;
+import com.jayshollenberger.util.LoadTextFile;
 
 import java.util.List;
 
