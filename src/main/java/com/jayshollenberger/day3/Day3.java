@@ -1,10 +1,13 @@
 package com.jayshollenberger.day3;
 
 import com.jayshollenberger.util.LoadTextFile;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Day3 {
 
@@ -34,37 +37,64 @@ public class Day3 {
 
     public static int overlap(List<Square> squares) {
 
-        HashMap<Integer, Integer> idMap = new HashMap<>();
+        HashMap<Point, Integer> fabric = new HashMap<>();
 
-        Integer sumBeforeSquare = 0;
-        for (Square one : squares) {
-            for (Square two : squares) {
-                idMap.put(one.id(), two.id());
-                if (!two.id().equals(one.id()) &&
-                        ((!idMap.containsKey(one.id()) && !idMap.containsValue(two.id())) ||
-                                (!idMap.containsKey(two.id())) && !idMap.containsValue(one.id())) &&
+        overlapFabric(squares, fabric);
 
-                        (one.startX() < two.startX() || one.startY() < two.startY()) &&
-                        one.endX() > two.startX() && one.endY() > two.startY()
-                ) {
-                    System.out.println(one);
-                    System.out.println(two);
-                    int x = Math.abs(two.startX() - one.startX());
-                    int y = Math.abs(two.startY() - one.startY());
-                    System.out.println(x);
-                    System.out.println(y);
-                    sumBeforeSquare += (x + y);
-                    System.out.println(sumBeforeSquare);
+        return fabric.entrySet().stream()
+                .filter(entry -> entry.getValue() > 1)
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList()).size();
 
+    }
+
+    public static int noOverlap(List<Square> squares) {
+
+        HashMap<Point, Integer> fabric = new HashMap<>();
+
+        overlapFabric(squares, fabric);
+
+        int id = 0;
+        for (Square square : squares) {
+            boolean overlap = false;
+            for (int dx = square.startX(); dx <= square.endX(); dx++) {
+                for (int dy = square.startY(); dy <= square.endY(); dy++) {
+                    if (fabric.get(new Point(dx,dy)) > 1) {
+                        overlap = true;
+                    }
+                }
+            }
+            if(!overlap) {
+                id = square.id();
+            }
+        }
+        return id;
+    }
+
+    private static void overlapFabric(List<Square> squares, HashMap<Point, Integer> fabric) {
+        for (Square square : squares) {
+
+            for (int dx = square.startX(); dx <= square.endX(); dx++) {
+                for (int dy = square.startY(); dy <= square.endY(); dy++) {
+                    if (!fabric.containsKey(new Point(dx, dy))) {
+                        fabric.put(new Point(dx, dy), 1);
+                    } else {
+                        int current = fabric.get(new Point(dx, dy));
+                        current += 1;
+                        fabric.put(new Point(dx, dy), current);
+                    }
                 }
             }
         }
-        return sumBeforeSquare;
     }
 
     public static void main(String[] args) {
         int squareInches = overlap(parseInput());
         System.out.println(squareInches);
+        int id = noOverlap(parseInput());
+        System.out.println(id);
 
     }
 }
+
+
